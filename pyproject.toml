@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rephi-auto-chart-assistant"
+version = "2.4.0"
+description = "Traditional audio-analysis reference chart generator for Re:PhiEdit RPE JSON charts."
+requires-python = ">=3.9"
+authors = [{name = "Jiayi Huang"}]
+dependencies = []
+
+[project.optional-dependencies]
+audio = ["numpy", "scipy", "soundfile", "librosa"]
+test = ["pytest"]
+release = ["numpy", "scipy", "soundfile", "librosa", "Pillow", "matplotlib", "pyinstaller"]
+
+[project.scripts]
+rephi-auto-chart = "rephi_auto_chart.cli:main"
+rephi-auto-chart-gui = "rephi_auto_chart.gui:main"
+
+[tool.setuptools]
+packages = ["rephi_auto_chart"]

@@ -1,0 +1,43 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.pycache_tmp/
+
+# Virtual environments
+.venv/
+.venv-windows-build/
+venv/
+ENV/
+
+# Build and release artifacts
+build/
+dist/
+Release/
+release_old/
+installer_tmp/
+*.egg-info/
+*.spec.bak
+
+# Runtime/generated output
+outputs/
+logs/
+cache/
+temp/
+tmp/
+*.log
+*.tmp
+
+# Generated charts and media test artifacts
+*.pez
+*.wav
+*.mp3
+*.flac
+*.ogg
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
