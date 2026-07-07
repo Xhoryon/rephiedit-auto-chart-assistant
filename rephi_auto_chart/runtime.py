@@ -14,6 +14,9 @@ from .config import save_default_config
 
 APP_DIR_NAME = "RePhiEditAutoChart"
 EXPORT_DIR_NAME = "RePhiEdit Charts"
+WINDOWS_INVALID_FILENAME_CHARS = '<>:"/\\|?*'
+THEME_MODES = {"system", "light", "dark"}
+THEMES = {"light", "dark"}
 
 
 @dataclass(frozen=True)
@@ -56,6 +59,40 @@ def default_export_path(mode: str = "pez") -> Path:
     return export_root / "generated.pez"
 
 
+def safe_export_filename_stem(name: str | Path) -> str:
+    raw = str(name)
+    stem = Path(raw).stem if Path(raw).suffix else raw
+    safe = "".join("_" if char in WINDOWS_INVALID_FILENAME_CHARS or ord(char) < 32 else char for char in stem)
+    safe = re.sub(r"_+", "_", safe).strip(" ._")
+    return safe or "generated"
+
+
+def next_available_export_path(path: str | Path) -> Path:
+    candidate = Path(path)
+    if not candidate.exists():
+        return candidate
+    suffix = candidate.suffix
+    stem = candidate.stem
+    parent = candidate.parent
+    index = 1
+    while True:
+        next_candidate = parent / f"{stem}_{index}{suffix}"
+        if not next_candidate.exists():
+            return next_candidate
+        index += 1
+
+
+def audio_default_export_path(audio_path: str | Path, mode: str = "pez", export_root: Path | None = None) -> Path:
+    root = export_root or default_export_root()
+    stem = safe_export_filename_stem(Path(audio_path).stem)
+    normalized = mode.lower()
+    if normalized == "json":
+        return next_available_export_path(root / f"{stem}.json")
+    if normalized == "folder":
+        return next_available_export_path(root / stem)
+    return next_available_export_path(root / f"{stem}.pez")
+
+
 def ensure_runtime_layout() -> tuple[RuntimeLayout, list[str]]:
     root = user_data_root()
     layout = RuntimeLayout(
@@ -87,7 +124,7 @@ def ensure_runtime_layout() -> tuple[RuntimeLayout, list[str]]:
 
 
 def update_checker_status() -> str:
-    return "Update checker: reserved for V3; automatic updates are not enabled in V2.3."
+    return "Update checker: reserved for V3; automatic updates are not enabled in V2.5.1."
 
 
 def bundled_resource_path(relative_path: str | Path) -> Path | None:
@@ -145,6 +182,68 @@ def save_configured_export_path(path: str | Path, layout: RuntimeLayout | None =
     data = read_runtime_config(active_layout)
     data["export_path"] = str(Path(path))
     write_runtime_config(data, active_layout)
+
+
+def detect_windows_theme() -> str | None:
+    if not sys.platform.startswith("win"):
+        return None
+    try:
+        import winreg
+
+        key_path = r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path) as key:
+            value, _ = winreg.QueryValueEx(key, "AppsUseLightTheme")
+        return "light" if int(value) == 1 else "dark"
+    except Exception:
+        return None
+
+
+def detect_system_theme() -> str:
+    return detect_windows_theme() or "light"
+
+
+def configured_theme_mode(layout: RuntimeLayout | None = None) -> str:
+    active_layout = layout or ensure_runtime_layout()[0]
+    data = read_runtime_config(active_layout)
+    mode = str(data.get("theme_mode") or "").strip().lower()
+    if mode in THEME_MODES:
+        return mode
+
+    legacy_theme = str(data.get("theme") or "").strip().lower()
+    if legacy_theme in THEMES:
+        data["theme_mode"] = legacy_theme
+        data.pop("theme", None)
+        write_runtime_config(data, active_layout)
+        return legacy_theme
+
+    data["theme_mode"] = "system"
+    data.pop("theme", None)
+    write_runtime_config(data, active_layout)
+    return "system"
+
+
+def save_configured_theme_mode(mode: str, layout: RuntimeLayout | None = None) -> None:
+    active_layout = layout or ensure_runtime_layout()[0]
+    data = read_runtime_config(active_layout)
+    normalized = str(mode).strip().lower()
+    data["theme_mode"] = normalized if normalized in THEME_MODES else "system"
+    data.pop("theme", None)
+    write_runtime_config(data, active_layout)
+
+
+def effective_theme(mode: str | None = None, layout: RuntimeLayout | None = None) -> str:
+    normalized = str(mode or configured_theme_mode(layout)).strip().lower()
+    if normalized == "system":
+        return detect_system_theme()
+    return normalized if normalized in THEMES else "light"
+
+
+def configured_theme(layout: RuntimeLayout | None = None) -> str:
+    return effective_theme(configured_theme_mode(layout), layout)
+
+
+def save_configured_theme(theme: str, layout: RuntimeLayout | None = None) -> None:
+    save_configured_theme_mode(theme, layout)
 
 
 def safe_output_dir(path: str | Path, layout: RuntimeLayout | None = None) -> Path:

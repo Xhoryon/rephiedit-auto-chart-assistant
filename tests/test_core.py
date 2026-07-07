@@ -9,7 +9,7 @@ import wave
 import zipfile
 from pathlib import Path
 
-from rephi_auto_chart.analysis import analyze_audio
+from rephi_auto_chart.analysis import AudioAnalysis, SUPPORTED_EXTENSIONS, analyze_audio
 import rephi_auto_chart
 from rephi_auto_chart.accent import detect_accent_at
 from rephi_auto_chart.batch import batch_generate
@@ -23,7 +23,7 @@ from rephi_auto_chart.parser import inspect_rephi_install
 from rephi_auto_chart.patterns import pattern_names
 from rephi_auto_chart.pattern_generator import pattern_library_names
 from rephi_auto_chart.layout import compute_layout_report
-from rephi_auto_chart.runtime import bundled_resource_path, configured_export_path, default_export_path, ensure_runtime_layout, safe_output_dir, save_configured_export_path
+from rephi_auto_chart.runtime import audio_default_export_path, bundled_resource_path, configured_export_path, default_export_path, ensure_runtime_layout, read_runtime_config, safe_export_filename_stem, safe_output_dir, save_configured_export_path, write_runtime_config
 from rephi_auto_chart.timebase import beat_tuple_to_beats
 from rephi_auto_chart.validator import detect_notes_inside_holds, validate_and_fix_chart
 
@@ -481,13 +481,13 @@ class CoreFlowTests(unittest.TestCase):
         ]
         self.assertTrue(all(path.exists() for path in required))
 
-    def test_release_metadata_is_230(self):
+    def test_release_metadata_is_current(self):
         root = Path(__file__).resolve().parents[1]
-        self.assertEqual(rephi_auto_chart.__version__, "2.4.0")
+        self.assertEqual(rephi_auto_chart.__version__, "2.5.1")
         version_info = (root / "packaging" / "windows" / "version_info.txt").read_text(encoding="utf-8")
         installer = (root / "installer" / "inno_setup.iss").read_text(encoding="utf-8")
-        self.assertIn("ProductVersion', '2.4.0", version_info)
-        self.assertIn('#define MyAppVersion "2.4.0"', installer)
+        self.assertIn("ProductVersion', '2.5.1", version_info)
+        self.assertIn('#define MyAppVersion "2.5.1"', installer)
         self.assertIn("OutputBaseFilename=Setup", installer)
 
     def test_installer_has_professional_release_checks(self):
@@ -666,6 +666,346 @@ class CoreFlowTests(unittest.TestCase):
                     os.environ.pop("LOCALAPPDATA", None)
                 else:
                     os.environ["LOCALAPPDATA"] = original_localappdata
+
+
+    def test_gui_default_export_uses_audio_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            export_root = Path(tmp) / "Documents" / "RePhiEdit Charts"
+            export_root.mkdir(parents=True)
+            audio = Path(tmp) / "Phigros Devotion.mp3"
+            audio.write_bytes(b"not real audio")
+            output = audio_default_export_path(audio, "pez", export_root=export_root)
+        self.assertEqual(output.name, "Phigros Devotion.pez")
+        self.assertEqual(output.parent.name, "RePhiEdit Charts")
+
+    def test_safe_export_filename(self):
+        self.assertEqual(safe_export_filename_stem('A:B*C?D"E<F>G|'), "A_B_C_D_E_F_G")
+        self.assertEqual(safe_export_filename_stem('  ...  '), "generated")
+        with tempfile.TemporaryDirectory() as tmp:
+            export_root = Path(tmp)
+            (export_root / "Song.pez").write_text("exists", encoding="utf-8")
+            output = audio_default_export_path(Path("Song.m4a"), "pez", export_root=export_root)
+        self.assertEqual(output.name, "Song_1.pez")
+
+    def test_m4a_extension_supported(self):
+        self.assertIn(".m4a", SUPPORTED_EXTENSIONS)
+        root = Path(__file__).resolve().parents[1]
+        gui_source = (root / "rephi_auto_chart" / "gui.py").read_text(encoding="utf-8")
+        readme = (root / "README.md").read_text(encoding="utf-8")
+        self.assertIn("*.m4a", gui_source)
+        self.assertIn("M4A", readme)
+
+    def test_sections_summary_or_scrollable_display(self):
+        from rephi_auto_chart.gui import format_song_info
+
+        analysis = AudioAnalysis(
+            Path("song.wav"),
+            44100,
+            12.0,
+            128.0,
+            [],
+            [],
+            [],
+            [(0.0, 2.0, "Intro"), (2.0, 4.0, "Intro"), (4.0, 6.0, "Verse"), (6.0, 8.0, "Verse"), (8.0, 10.0, "Drop")],
+            [],
+        )
+        text = format_song_info(analysis)
+        self.assertIn("Sections: Intro x2, Verse x2, Drop x1", text)
+        self.assertNotIn("Sections Full:", text)
+
+    def test_log_scrollbar_exists_or_log_widget_scrollable(self):
+        root = Path(__file__).resolve().parents[1]
+        gui_source = (root / "rephi_auto_chart" / "gui.py").read_text(encoding="utf-8")
+        self.assertIn("self.log = ScrolledText", gui_source)
+        self.assertIn("self.log.see(tk.END)", gui_source)
+        self.assertIn("xscrollcommand", gui_source)
+        self.assertIn("self.sections_summary_label", gui_source)
+
+    def test_version_242_consistency_legacy_hotfix_coverage(self):
+        root = Path(__file__).resolve().parents[1]
+        self.assertEqual(rephi_auto_chart.__version__, "2.5.1")
+        self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "2.5.1")
+        version_info = (root / "packaging" / "windows" / "version_info.txt").read_text(encoding="utf-8")
+        installer = (root / "installer" / "inno_setup.iss").read_text(encoding="utf-8")
+        release_check = (root / "release_check.ps1").read_text(encoding="utf-8")
+        readme = (root / "README.md").read_text(encoding="utf-8")
+        self.assertIn("ProductVersion', '2.5.1", version_info)
+        self.assertIn('#define MyAppVersion "2.5.1"', installer)
+        self.assertIn("2.5.1", release_check)
+        self.assertIn("V2.5.1", readme)
+
+
+    def test_v242_stats_widget_scrollable(self):
+        root = Path(__file__).resolve().parents[1]
+        gui_source = (root / "rephi_auto_chart" / "gui.py").read_text(encoding="utf-8")
+        self.assertIn("from tkinter.scrolledtext import ScrolledText", gui_source)
+        self.assertIn("self.stats_text = ScrolledText", gui_source)
+        self.assertIn("wrap=tk.NONE", gui_source)
+        self.assertIn("_set_stats_text", gui_source)
+        self.assertNotIn("textvariable=self.stats_info", gui_source)
+
+    def test_v242_log_widget_scrollable(self):
+        root = Path(__file__).resolve().parents[1]
+        gui_source = (root / "rephi_auto_chart" / "gui.py").read_text(encoding="utf-8")
+        self.assertIn("self.log = ScrolledText", gui_source)
+        self.assertIn("height=9", gui_source)
+        self.assertIn("self.log.see(tk.END)", gui_source)
+        self.assertNotIn("self.log_scrollbar", gui_source)
+
+    def test_v242_chart_container_scrollable(self):
+        root = Path(__file__).resolve().parents[1]
+        gui_source = (root / "rephi_auto_chart" / "gui.py").read_text(encoding="utf-8")
+        self.assertIn("def _create_chart_card", gui_source)
+        self.assertIn("xscrollcommand=scrollbar.set", gui_source)
+        self.assertIn("scrollregion=(0, 0, CHART_CANVAS_WIDTH", gui_source)
+        for name in ("wave_canvas", "density_canvas", "pattern_canvas", "layout_canvas"):
+            self.assertIn(f"self.{name} = self._create_chart_card", gui_source)
+
+    def test_v242_window_min_size(self):
+        root = Path(__file__).resolve().parents[1]
+        gui_source = (root / "rephi_auto_chart" / "gui.py").read_text(encoding="utf-8")
+        self.assertIn("self.minsize(1000, 700)", gui_source)
+        self.assertIn("self.workspace_canvas = tk.Canvas", gui_source)
+        self.assertIn("self.output_notebook = ttk.Notebook", gui_source)
+
+    def test_version_242_consistency(self):
+        root = Path(__file__).resolve().parents[1]
+        self.assertEqual(rephi_auto_chart.__version__, "2.5.1")
+        self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "2.5.1")
+        version_info = (root / "packaging" / "windows" / "version_info.txt").read_text(encoding="utf-8")
+        installer = (root / "installer" / "inno_setup.iss").read_text(encoding="utf-8")
+        release_check = (root / "release_check.ps1").read_text(encoding="utf-8")
+        readme = (root / "README.md").read_text(encoding="utf-8")
+        self.assertIn("ProductVersion', '2.5.1", version_info)
+        self.assertIn('#define MyAppVersion "2.5.1"', installer)
+        self.assertIn("2.5.1", release_check)
+        self.assertIn("V2.5.1", readme)
+
+
+    def test_v250_workspace_scrollable(self):
+        root = Path(__file__).resolve().parents[1]
+        gui_source = (root / "rephi_auto_chart" / "gui.py").read_text(encoding="utf-8")
+        self.assertIn("self.workspace_canvas = tk.Canvas", gui_source)
+        self.assertIn("self.workspace_scrollbar", gui_source)
+        self.assertIn("self.workspace_window", gui_source)
+        self.assertIn("yscrollcommand=self.workspace_scrollbar.set", gui_source)
+        self.assertIn("_update_workspace_scrollregion", gui_source)
+        self.assertNotIn("body_panes = ttk.Panedwindow", gui_source)
+
+    def test_v250_stats_log_tabs_exist(self):
+        root = Path(__file__).resolve().parents[1]
+        gui_source = (root / "rephi_auto_chart" / "gui.py").read_text(encoding="utf-8")
+        self.assertIn("self.output_notebook = ttk.Notebook", gui_source)
+        self.assertIn("self.stats_tab", gui_source)
+        self.assertIn("self.log_tab", gui_source)
+        self.assertIn('text="Stats"', gui_source)
+        self.assertIn('text="Log"', gui_source)
+        self.assertIn("self.log = ScrolledText", gui_source)
+        self.assertIn("self.stats_text = ScrolledText", gui_source)
+
+    def test_v250_sections_compact_summary(self):
+        from rephi_auto_chart.gui import format_full_sections, format_song_info
+
+        analysis = AudioAnalysis(
+            Path("song.wav"),
+            44100,
+            152.71,
+            113.45,
+            [],
+            [],
+            [],
+            [(0.0, 2.0, "Intro"), (2.0, 4.0, "Intro"), (4.0, 6.0, "Verse"), (6.0, 8.0, "Verse"), (8.0, 10.0, "Outro")],
+            [],
+        )
+        compact = format_song_info(analysis)
+        self.assertIn("Length: 152.71s | BPM: 113.45 | Sample Rate: 44100 Hz", compact)
+        self.assertIn("Sections: Intro x2, Verse x2, Outro x1", compact)
+        self.assertNotIn("Sections Full", compact)
+        self.assertIn("Intro, Intro, Verse, Verse, Outro", format_full_sections(analysis.sections))
+
+    def test_v250_full_sections_toggle(self):
+        root = Path(__file__).resolve().parents[1]
+        gui_source = (root / "rephi_auto_chart" / "gui.py").read_text(encoding="utf-8")
+        self.assertIn("self.show_full_sections", gui_source)
+        self.assertIn("_toggle_full_sections", gui_source)
+        self.assertIn("Show Full Sections", gui_source)
+        self.assertIn("Hide Full Sections", gui_source)
+
+    def test_v250_chart_workspace_contains_four_charts(self):
+        root = Path(__file__).resolve().parents[1]
+        gui_source = (root / "rephi_auto_chart" / "gui.py").read_text(encoding="utf-8")
+        for attr in ("wave_canvas", "density_canvas", "pattern_canvas", "layout_canvas"):
+            self.assertIn(f"self.{attr} = self._create_chart_card", gui_source)
+        self.assertIn('"Waveform"', gui_source)
+        self.assertIn('"Density per 10s"', gui_source)
+        self.assertIn('"Pattern Density"', gui_source)
+        self.assertIn('"Layout Heatmap"', gui_source)
+
+    def test_v250_no_algorithm_files_modified_unnecessarily(self):
+        root = Path(__file__).resolve().parents[1]
+        forbidden_files = [
+            "generator.py",
+            "pattern_generator.py",
+            "layout.py",
+            "validator.py",
+            "exporter.py",
+            "chart_analyzer.py",
+            "compare.py",
+            "batch.py",
+        ]
+        for filename in forbidden_files:
+            source = (root / "rephi_auto_chart" / filename).read_text(encoding="utf-8")
+            self.assertNotIn("V2.5.1", source)
+            self.assertNotIn("Theme", source)
+            self.assertNotIn("Chart Workspace", source)
+
+    def test_version_250_consistency(self):
+        root = Path(__file__).resolve().parents[1]
+        self.assertEqual(rephi_auto_chart.__version__, "2.5.1")
+        self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "2.5.1")
+        version_info = (root / "packaging" / "windows" / "version_info.txt").read_text(encoding="utf-8")
+        installer = (root / "installer" / "inno_setup.iss").read_text(encoding="utf-8")
+        release_check = (root / "release_check.ps1").read_text(encoding="utf-8")
+        readme = (root / "README.md").read_text(encoding="utf-8")
+        self.assertIn("ProductVersion', '2.5.1", version_info)
+        self.assertIn('#define MyAppVersion "2.5.1"', installer)
+        self.assertIn("2.5.1", release_check)
+        self.assertIn("V2.5.1", readme)
+
+    def test_dark_theme_exists(self):
+        root = Path(__file__).resolve().parents[1]
+        gui_source = (root / "rephi_auto_chart" / "gui.py").read_text(encoding="utf-8")
+        self.assertIn("THEME_PALETTES", gui_source)
+        self.assertIn('"light"', gui_source)
+        self.assertIn('"dark"', gui_source)
+        self.assertIn("self.theme = tk.StringVar", gui_source)
+        self.assertIn("_apply_theme", gui_source)
+        self.assertIn("_on_theme_changed", gui_source)
+
+    def test_theme_persistence(self):
+        from rephi_auto_chart.runtime import configured_theme, save_configured_theme
+
+        original_localappdata = os.environ.get("LOCALAPPDATA")
+        with tempfile.TemporaryDirectory() as tmp:
+            os.environ["LOCALAPPDATA"] = str(Path(tmp) / "localappdata")
+            try:
+                layout, _ = ensure_runtime_layout()
+                save_configured_theme("dark", layout)
+                self.assertEqual(configured_theme(layout), "dark")
+                save_configured_theme("light", layout)
+                self.assertEqual(configured_theme(layout), "light")
+            finally:
+                if original_localappdata is None:
+                    os.environ.pop("LOCALAPPDATA", None)
+                else:
+                    os.environ["LOCALAPPDATA"] = original_localappdata
+
+    def test_dark_chart_palette(self):
+        root = Path(__file__).resolve().parents[1]
+        gui_source = (root / "rephi_auto_chart" / "gui.py").read_text(encoding="utf-8")
+        self.assertIn('"chart_bg": "#1e1e1e"', gui_source)
+        self.assertIn('"chart_border": "#333333"', gui_source)
+        self.assertIn('"text": "#f0f0f0"', gui_source)
+        self.assertIn("_style_chart_canvas", gui_source)
+
+    def test_dark_log_colors(self):
+        root = Path(__file__).resolve().parents[1]
+        gui_source = (root / "rephi_auto_chart" / "gui.py").read_text(encoding="utf-8")
+        for tag in ('"error"', '"warning"', '"success"', '"info"'):
+            self.assertIn(tag, gui_source)
+        self.assertIn("tag_configure", gui_source)
+        self.assertIn("_log_tag", gui_source)
+
+    def test_v251_theme_mode_system_exists(self):
+        from rephi_auto_chart.runtime import configured_theme_mode, detect_system_theme, effective_theme, save_configured_theme_mode
+
+        original_localappdata = os.environ.get("LOCALAPPDATA")
+        with tempfile.TemporaryDirectory() as tmp:
+            os.environ["LOCALAPPDATA"] = str(Path(tmp) / "localappdata")
+            try:
+                layout, _ = ensure_runtime_layout()
+                self.assertEqual(configured_theme_mode(layout), "system")
+                self.assertIn(detect_system_theme(), {"light", "dark"})
+                self.assertIn(effective_theme("system", layout), {"light", "dark"})
+                save_configured_theme_mode("dark", layout)
+                self.assertEqual(configured_theme_mode(layout), "dark")
+            finally:
+                if original_localappdata is None:
+                    os.environ.pop("LOCALAPPDATA", None)
+                else:
+                    os.environ["LOCALAPPDATA"] = original_localappdata
+
+    def test_v251_windows_theme_detection_function(self):
+        root = Path(__file__).resolve().parents[1]
+        runtime_source = (root / "rephi_auto_chart" / "runtime.py").read_text(encoding="utf-8")
+        self.assertIn("def detect_windows_theme", runtime_source)
+        self.assertIn("winreg", runtime_source)
+        self.assertIn("AppsUseLightTheme", runtime_source)
+        self.assertIn(r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", runtime_source)
+
+    def test_v251_theme_config_migration(self):
+        from rephi_auto_chart.runtime import configured_theme_mode
+
+        original_localappdata = os.environ.get("LOCALAPPDATA")
+        with tempfile.TemporaryDirectory() as tmp:
+            os.environ["LOCALAPPDATA"] = str(Path(tmp) / "localappdata")
+            try:
+                layout, _ = ensure_runtime_layout()
+                data = read_runtime_config(layout)
+                data.pop("theme_mode", None)
+                data["theme"] = "dark"
+                write_runtime_config(data, layout)
+                self.assertEqual(configured_theme_mode(layout), "dark")
+                migrated = read_runtime_config(layout)
+                self.assertEqual(migrated.get("theme_mode"), "dark")
+                self.assertNotIn("theme", migrated)
+            finally:
+                if original_localappdata is None:
+                    os.environ.pop("LOCALAPPDATA", None)
+                else:
+                    os.environ["LOCALAPPDATA"] = original_localappdata
+
+    def test_v251_completion_dialog_uses_theme(self):
+        root = Path(__file__).resolve().parents[1]
+        gui_source = (root / "rephi_auto_chart" / "gui.py").read_text(encoding="utf-8")
+        self.assertIn("def _show_completion_dialog", gui_source)
+        self.assertIn("tk.Toplevel", gui_source)
+        self.assertIn("dialog.configure(bg=palette", gui_source)
+        self.assertIn("Open Folder", gui_source)
+        self.assertIn("Continue Editing", gui_source)
+        self.assertIn("Close", gui_source)
+        self.assertIn("_style_dialog_button", gui_source)
+
+    def test_v251_no_global_mousewheel_binding(self):
+        root = Path(__file__).resolve().parents[1]
+        gui_source = (root / "rephi_auto_chart" / "gui.py").read_text(encoding="utf-8")
+        self.assertNotIn('bind_all("<MouseWheel>"', gui_source)
+        self.assertNotIn('bind_all("<Button-4>"', gui_source)
+        self.assertNotIn('bind_all("<Button-5>"', gui_source)
+        self.assertIn("def _bind_mousewheel", gui_source)
+        self.assertIn("def _on_workspace_mousewheel", gui_source)
+        self.assertIn("def _on_text_mousewheel", gui_source)
+
+    def test_v251_stats_log_scroll_isolated(self):
+        root = Path(__file__).resolve().parents[1]
+        gui_source = (root / "rephi_auto_chart" / "gui.py").read_text(encoding="utf-8")
+        self.assertIn("self._bind_mousewheel(self.stats_text, self._on_text_mousewheel)", gui_source)
+        self.assertIn("self._bind_mousewheel(self.log, self._on_text_mousewheel)", gui_source)
+        self.assertIn('return "break"', gui_source)
+        self.assertIn("event.widget.yview_scroll", gui_source)
+
+    def test_version_251_consistency(self):
+        root = Path(__file__).resolve().parents[1]
+        self.assertEqual(rephi_auto_chart.__version__, "2.5.1")
+        self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "2.5.1")
+        version_info = (root / "packaging" / "windows" / "version_info.txt").read_text(encoding="utf-8")
+        installer = (root / "installer" / "inno_setup.iss").read_text(encoding="utf-8")
+        release_check = (root / "release_check.ps1").read_text(encoding="utf-8")
+        readme = (root / "README.md").read_text(encoding="utf-8")
+        self.assertIn("ProductVersion', '2.5.1", version_info)
+        self.assertIn('#define MyAppVersion "2.5.1"', installer)
+        self.assertIn("2.5.1", release_check)
+        self.assertIn("V2.5.1", readme)
 
     def test_chart_analyzer_writes_json_csv_html_reports(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -2,7 +2,7 @@
 #define MyAppDisplayName "Re:PhiEdit Auto Chart Assistant"
 #define MyAppSafeName "RePhiEdit Auto Chart Assistant"
 #define MyAppSafeId "RePhiEditAutoChartAssistant"
-#define MyAppVersion "2.4.0"
+#define MyAppVersion "2.5.1"
 #define MyAppPublisher "Jiayi Huang"
 #define MyAppURL "https://github.com/"
 #define MyAppExeName "RePhiEditAutoChartAssistant.exe"

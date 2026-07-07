@@ -2,7 +2,7 @@
 setlocal
 cd /d "%~dp0"
 
-echo Building Re:PhiEdit Auto Chart Assistant 2.4.0 Release...
+echo Building Re:PhiEdit Auto Chart Assistant 2.5.1 Release...
 echo.
 echo Select build mode:
 echo   1 Normal incremental build (reuse .venv-windows-build)

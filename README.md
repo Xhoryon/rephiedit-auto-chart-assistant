@@ -23,12 +23,12 @@ Audio
   -> Manual Refinement
 ```
 
-V2.4.0 is the final rule-based V2 release. It does not train on reference charts and should not be described as AI charting.
+V2.5.1 is a GUI theme and scroll hotfix release. It does not train on reference charts and should not be described as AI charting.
 
 ## Features
 
 - GUI workflow for selecting audio, difficulty, style, timing offset, and export target.
-- Audio input support for WAV, MP3, FLAC, and OGG when the bundled or optional audio dependencies are available.
+- Audio input support for WAV, MP3, FLAC, OGG, and M4A when the bundled or optional audio dependencies are available.
 - Difficulty presets: EZ, HD, IN, and AT.
 - Rule-based BPM, beat, onset, energy, accent, phrase, pattern, and layout analysis.
 - Pattern-based generation with Tap, Drag, Hold, and Flick notes.
@@ -41,6 +41,7 @@ V2.4.0 is the final rule-based V2 release. It does not train on reference charts
 - Batch Mode for generating multiple PEZ files.
 - Startup diagnostics for audio decoding, default config, and output folder checks.
 - Windows installer and portable build pipeline.
+- System, Light, and Dark GUI themes with runtime switching.
 
 ## Installation
 
@@ -65,6 +66,8 @@ Generated charts default to:
 ```text
 %USERPROFILE%\Documents\RePhiEdit Charts
 ```
+
+M4A decoding may require ffmpeg or an audio backend supported by librosa/audioread, depending on the Windows audio stack and bundled codecs.
 
 ### Portable
 
@@ -109,7 +112,7 @@ Release\Portable\RePhiEditAutoChartAssistant.exe
 ## Quick Start
 
 1. Open Re:PhiEdit Auto Chart Assistant.
-2. Click **Select Audio** and choose an MP3, WAV, FLAC, or OGG file.
+2. Click **Select Audio** and choose an MP3, WAV, FLAC, OGG, or M4A file.
 3. Select a difficulty: EZ, HD, IN, or AT.
 4. Adjust density, style, timing offset, or note-type options if needed.
 5. Choose **PEZ Import Package** as the output mode.
@@ -249,7 +252,7 @@ LICENSE                  License file
 
 ## Known Limitations
 
-- V2.4.0 is a rule-based generator.
+- V2.5.1 is a rule-based generator.
 - It generates editable draft charts, not final human-quality charts.
 - It does not produce official Phigros charts.
 - It does not learn from reference charts or imitate a specific charter style.

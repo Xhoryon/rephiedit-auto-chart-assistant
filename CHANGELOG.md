@@ -1,5 +1,82 @@
 # Changelog
 
+## 2.5.1
+
+GUI theme and scroll hotfix.
+
+### Added
+
+- Added a System theme mode that follows the Windows app theme at startup.
+- Added View -> Theme menu choices for System, Light, and Dark.
+
+### Changed
+
+- Moved theme selection out of the generation parameter panel.
+- Replaced the generation finished message with a theme-aware custom dialog.
+
+### Fixed
+
+- Fixed mouse wheel routing so Stats, Log, and Chart Workspace scroll independently.
+- Fixed Dark Mode completion dialog styling inconsistencies.
+
+## 2.5.0
+
+GUI workspace redesign release.
+
+### Added
+
+- Added a Chart Workspace with a dedicated vertically scrollable frame for Song Info, compact Sections, Waveform, Density per 10s, Pattern Density, and Layout Heatmap.
+- Added Stats and Log tabs so output information no longer competes with chart preview space.
+- Added Light and Dark themes with runtime switching and persistence in the runtime config.
+- Added color-coded Log tags for info, success, warning, and error messages.
+
+### Changed
+
+- Song Info is now a compact summary. Full section lists are hidden by default and can be expanded with Show Full Sections.
+- The main chart area is now the visual center of the GUI. Stats and logs are auxiliary tabbed output panels.
+
+### Fixed
+
+- Fixed the Layout Heatmap and lower chart previews becoming difficult to reach in smaller windows.
+- Fixed Stats and Log consuming primary workspace area.
+
+## 2.4.2
+
+GUI layout hotfix.
+
+### Changed
+
+- Moved the GUI to a fixed top control area, scrollable middle content, and dedicated bottom log panel.
+- Wrapped Waveform, Density per 10s, Pattern Density, and Layout Heatmap canvases in horizontally scrollable containers.
+- Replaced Generation Stats labels with a scrollable monospace text area.
+- Replaced the manual Log text/scrollbar pair with `ScrolledText` so history remains readable when the window is smaller.
+
+### Fixed
+
+- Fixed chart previews being clipped in smaller windows.
+- Fixed long Generation Stats content being cut off on the right side.
+- Fixed Log collapsing near the bottom of the window and becoming difficult to review.
+
+## 2.4.1
+
+V2.4 GUI and audio-format hotfix.
+
+### Added
+
+- Added M4A to supported audio extensions in the GUI and analysis entrypoint.
+- Added audio-name-based default export paths, so `Song Name.mp3` defaults to `Song Name.pez`.
+
+### Changed
+
+- GUI content now lives in a scrollable main area for smaller windows.
+- Song section information now shows a compact summary plus the full section list in a scrollable text area.
+- The log panel now has a vertical scrollbar and continues to auto-scroll to the newest message.
+
+### Fixed
+
+- Fixed generated PEZ exports defaulting to generic names such as `generated.pez` after selecting audio.
+- Fixed chart preview panels becoming unusable when the window is resized smaller.
+
 ## 2.4.0
 
 Rule-based final feature release.

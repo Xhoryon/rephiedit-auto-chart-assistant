@@ -103,7 +103,7 @@ try {
     if (Test-Path $Exe) {
         $version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($Exe)
         Add-Check "EXE ProductName metadata" ($version.ProductName -like "*Auto Chart Assistant*")
-        Add-Check "EXE version is 2.4.0" ($version.ProductVersion -like "2.4.0*")
+        Add-Check "EXE version is 2.5.1" ($version.ProductVersion -like "2.5.1*")
     }
 
     foreach ($file in @(

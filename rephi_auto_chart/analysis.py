@@ -12,7 +12,7 @@ from statistics import median
 from typing import List
 
 
-SUPPORTED_EXTENSIONS = {".wav", ".mp3", ".flac", ".ogg"}
+SUPPORTED_EXTENSIONS = {".wav", ".mp3", ".flac", ".ogg", ".m4a"}
 
 
 @dataclass(frozen=True)
@@ -128,7 +128,8 @@ def _try_optional_readers(path: Path) -> tuple[list[float], int]:
         return [float(x) for x in data], int(sample_rate)
     except Exception as exc:
         raise RuntimeError(
-            f"Cannot decode {path.suffix} without ffmpeg, soundfile, or librosa. "
+            f"Cannot decode {path.suffix} without ffmpeg, soundfile, librosa, or audioread support. "
+            "M4A decoding may require ffmpeg or an audio backend supported by librosa/audioread. "
             "Install optional dependencies or convert the audio to WAV."
         ) from exc
 

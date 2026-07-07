@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rephi-auto-chart-assistant"
-version = "2.4.0"
+version = "2.5.1"
 description = "Traditional audio-analysis reference chart generator for Re:PhiEdit RPE JSON charts."
 requires-python = ">=3.9"
 authors = [{name = "Jiayi Huang"}]
