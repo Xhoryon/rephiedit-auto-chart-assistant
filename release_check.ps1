@@ -103,8 +103,11 @@ try {
     if (Test-Path $Exe) {
         $version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($Exe)
         Add-Check "EXE ProductName metadata" ($version.ProductName -like "*Auto Chart Assistant*")
-        Add-Check "EXE version is 2.5.1" ($version.ProductVersion -like "2.5.1*")
+        Add-Check "EXE version is 2.5.2" ($version.ProductVersion -like "2.5.2*")
     }
+
+    Add-BundledFileCheck $Portable "assets\windows\ffmpeg.exe"
+    $script:checks.Add("[OK] Portable includes bundled ffmpeg")
 
     foreach ($file in @(
         "config\default_config.json",
@@ -149,6 +152,7 @@ try {
     Add-Check "PyInstaller spec exists" (Test-Path $Spec)
     $SpecText = Get-Content $Spec -Raw
     Add-Check "PyInstaller bundles default config" ($SpecText -match "default_config\.json")
+    Add-Check "PyInstaller bundles ffmpeg" ($SpecText -match "ffmpeg.exe")
     foreach ($dependency in @("numpy", "scipy", "soundfile", "librosa", "PIL", "matplotlib")) {
         Add-Check "PyInstaller collects $dependency" ($SpecText -match $dependency)
     }
@@ -169,6 +173,7 @@ try {
     Add-Check "Runtime supports PyInstaller _MEIPASS resources" ($Runtime -match "_MEIPASS")
     Add-Check "Runtime checks PyInstaller _internal resources" ($Runtime -match "_internal")
     Add-Check "Runtime defines Documents chart export folder" ($Runtime -match "RePhiEdit Charts")
+    Add-Check "Runtime can locate bundled ffmpeg" ($Runtime -match "find_ffmpeg" -and $Runtime -match "assets/windows/ffmpeg.exe")
 
     $Gui = Get-Content (Join-Path $RepoRoot "rephi_auto_chart\gui.py") -Raw
     $SourceConfig = Get-Content (Join-Path $RepoRoot "config\default_config.json") -Raw | ConvertFrom-Json

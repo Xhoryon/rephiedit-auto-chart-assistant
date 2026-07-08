@@ -1,5 +1,24 @@
 # Changelog
 
+## 2.5.2
+
+M4A decoding hotfix for Windows release builds.
+
+### Added
+
+- Added bundled ffmpeg support for Windows installer and portable builds.
+- Added runtime ffmpeg discovery for PyInstaller `_internal`, EXE directory, project assets, and system PATH fallback.
+- Added AAC and ALAC as selectable audio inputs alongside M4A.
+
+### Changed
+
+- M4A/AAC/ALAC inputs now decode through ffmpeg into a temporary WAV stored under the runtime temp directory.
+- GUI M4A failure messages are now user-friendly and no longer ask ordinary users to install ffmpeg manually.
+
+### Fixed
+
+- Fixed Windows release builds allowing M4A selection without bundling a decoder capable of opening it.
+
 ## 2.5.1
 
 GUI theme and scroll hotfix.

@@ -29,7 +29,7 @@ from .runtime import (
 )
 
 
-AUDIO_FILE_PATTERN = "*.wav *.mp3 *.flac *.ogg *.m4a"
+AUDIO_FILE_PATTERN = "*.wav *.mp3 *.flac *.ogg *.m4a *.aac *.alac"
 CHART_CANVAS_WIDTH = 980
 
 THEME_PALETTES = {
@@ -97,7 +97,7 @@ def format_song_info(analysis: AudioAnalysis) -> str:
 class AutoChartGUI(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
-        self.title("Re:PhiEdit Auto Chart Assistant 2.5.1")
+        self.title("Re:PhiEdit Auto Chart Assistant 2.5.2")
         self.geometry("1180x820")
         self.minsize(1000, 700)
         self.runtime_layout, self.runtime_messages = ensure_runtime_layout()
@@ -765,10 +765,12 @@ class AutoChartGUI(tk.Tk):
             subprocess.run(["xdg-open", str(folder)], check=False)
 
     def _friendly_error(self, exc: Exception) -> str:
-        message = f"{exc.__class__.__name__}: {exc}"
-        if ".m4a" in message.lower() or "cannot decode" in message.lower():
-            message += "\nM4A decoding may require ffmpeg or an audio backend supported by librosa/audioread."
-        return message
+        message = str(exc)
+        if "M4A decoding failed" in message:
+            return "M4A decoding failed. Please check whether the audio file is valid."
+        if ".m4a" in message.lower() or ".aac" in message.lower() or ".alac" in message.lower():
+            return "M4A decoding failed. Please check whether the audio file is valid."
+        return f"{exc.__class__.__name__}: {exc}"
 
     def _log(self, message: str) -> None:
         tag = self._log_tag(message)

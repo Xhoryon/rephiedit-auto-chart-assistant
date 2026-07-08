@@ -1,0 +1,6 @@
+﻿This Windows release bundles ffmpeg.exe for local audio decoding, including M4A/AAC/ALAC support.
+
+FFmpeg is a separate open-source project and is distributed under its own licenses.
+Project: https://ffmpeg.org/
+License information: https://ffmpeg.org/legal.html
+Windows build source used by build script: https://www.gyan.dev/ffmpeg/builds/

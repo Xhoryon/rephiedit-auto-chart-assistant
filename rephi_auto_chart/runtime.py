@@ -124,7 +124,7 @@ def ensure_runtime_layout() -> tuple[RuntimeLayout, list[str]]:
 
 
 def update_checker_status() -> str:
-    return "Update checker: reserved for V3; automatic updates are not enabled in V2.5.1."
+    return "Update checker: reserved for V3; automatic updates are not enabled in V2.5.2."
 
 
 def bundled_resource_path(relative_path: str | Path) -> Path | None:
@@ -151,6 +151,19 @@ def bundled_resource_path(relative_path: str | Path) -> Path | None:
         if candidate.exists():
             return candidate
     return None
+
+
+def find_ffmpeg() -> Path | None:
+    for relative in (
+        "assets/windows/ffmpeg.exe",
+        "ffmpeg.exe",
+        "tools/ffmpeg/ffmpeg.exe",
+    ):
+        bundled = bundled_resource_path(relative)
+        if bundled and bundled.exists():
+            return bundled.resolve()
+    path_value = shutil.which("ffmpeg")
+    return Path(path_value).resolve() if path_value else None
 
 
 def read_runtime_config(layout: RuntimeLayout | None = None) -> dict[str, Any]:

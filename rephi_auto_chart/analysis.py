@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import audioop
 import math
-import shutil
+import os
 import subprocess
 import tempfile
 import wave
@@ -11,8 +11,11 @@ from pathlib import Path
 from statistics import median
 from typing import List
 
+from .runtime import ensure_runtime_layout, find_ffmpeg
 
-SUPPORTED_EXTENSIONS = {".wav", ".mp3", ".flac", ".ogg", ".m4a"}
+
+SUPPORTED_EXTENSIONS = {".wav", ".mp3", ".flac", ".ogg", ".m4a", ".aac", ".alac"}
+FFMPEG_FIRST_EXTENSIONS = {".m4a", ".aac", ".alac"}
 
 
 @dataclass(frozen=True)
@@ -72,8 +75,11 @@ def analyze_audio(path: str | Path) -> AudioAnalysis:
 
 
 def _read_audio_mono(path: Path) -> tuple[list[float], int]:
-    if path.suffix.lower() == ".wav":
+    suffix = path.suffix.lower()
+    if suffix == ".wav":
         return _read_wav(path)
+    if suffix in FFMPEG_FIRST_EXTENSIONS:
+        return _read_ffmpeg_first(path)
     converted = _try_decode_with_ffmpeg(path)
     if converted is not None:
         try:
@@ -81,6 +87,19 @@ def _read_audio_mono(path: Path) -> tuple[list[float], int]:
         finally:
             converted.unlink(missing_ok=True)
     return _try_optional_readers(path)
+
+
+def _read_ffmpeg_first(path: Path) -> tuple[list[float], int]:
+    converted = _try_decode_with_ffmpeg(path)
+    if converted is not None:
+        try:
+            return _read_wav(converted)
+        finally:
+            converted.unlink(missing_ok=True)
+    try:
+        return _try_optional_readers(path)
+    except Exception as exc:
+        raise RuntimeError("M4A decoding failed. Please check whether the audio file is valid.") from exc
 
 
 def _read_wav(path: Path) -> tuple[list[float], int]:
@@ -100,11 +119,15 @@ def _read_wav(path: Path) -> tuple[list[float], int]:
 
 
 def _try_decode_with_ffmpeg(path: Path) -> Path | None:
-    ffmpeg = shutil.which("ffmpeg")
+    ffmpeg = find_ffmpeg()
     if not ffmpeg:
         return None
-    out = Path(tempfile.mkstemp(suffix=".wav")[1])
-    cmd = [ffmpeg, "-y", "-i", str(path), "-ac", "1", "-ar", "44100", str(out)]
+    runtime_temp = ensure_runtime_layout()[0].temp
+    runtime_temp.mkdir(parents=True, exist_ok=True)
+    fd, out_name = tempfile.mkstemp(suffix=".wav", dir=runtime_temp)
+    os.close(fd)
+    out = Path(out_name)
+    cmd = [str(ffmpeg), "-y", "-hide_banner", "-loglevel", "error", "-i", str(path), "-vn", "-ac", "1", "-ar", "44100", str(out)]
     result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     if result.returncode != 0:
         out.unlink(missing_ok=True)
@@ -127,10 +150,10 @@ def _try_optional_readers(path: Path) -> tuple[list[float], int]:
         data, sample_rate = librosa.load(str(path), sr=None, mono=True)
         return [float(x) for x in data], int(sample_rate)
     except Exception as exc:
+        if path.suffix.lower() in FFMPEG_FIRST_EXTENSIONS:
+            raise RuntimeError("M4A decoding failed. Please check whether the audio file is valid.") from exc
         raise RuntimeError(
-            f"Cannot decode {path.suffix} without ffmpeg, soundfile, librosa, or audioread support. "
-            "M4A decoding may require ffmpeg or an audio backend supported by librosa/audioread. "
-            "Install optional dependencies or convert the audio to WAV."
+            f"Cannot decode {path.suffix}. The audio file may be damaged or unsupported by the bundled decoders."
         ) from exc
 
 

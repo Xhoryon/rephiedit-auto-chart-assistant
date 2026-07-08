@@ -2,7 +2,7 @@
 #define MyAppDisplayName "Re:PhiEdit Auto Chart Assistant"
 #define MyAppSafeName "RePhiEdit Auto Chart Assistant"
 #define MyAppSafeId "RePhiEditAutoChartAssistant"
-#define MyAppVersion "2.5.1"
+#define MyAppVersion "2.5.2"
 #define MyAppPublisher "Jiayi Huang"
 #define MyAppURL "https://github.com/"
 #define MyAppExeName "RePhiEditAutoChartAssistant.exe"
@@ -55,7 +55,7 @@ Name: "associatepez"; Description: "Associate .pez files with Chart Analyzer"; G
 [Files]
 Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\assets\windows\app_icon.ico"; DestDir: "{app}\assets\windows"; Flags: ignoreversion
-Source: "..\tools\ffmpeg\ffmpeg.exe"; DestDir: "{app}\tools\ffmpeg"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "..\assets\windows\ffmpeg.exe"; DestDir: "{app}\assets\windows"; Flags: ignoreversion
 
 [Dirs]
 Name: "{localappdata}\RePhiEditAutoChart"

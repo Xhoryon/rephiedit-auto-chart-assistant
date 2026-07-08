@@ -81,6 +81,45 @@ function Test-Distribution($PythonPath, $DistributionName) {
     return Test-NativeSuccess $PythonPath @("-c", $code)
 }
 
+
+function Ensure-FFmpeg {
+    $AssetDir = Join-Path $RepoRoot "assets\windows"
+    $FFmpegExe = Join-Path $AssetDir "ffmpeg.exe"
+    $LicenseFile = Join-Path $AssetDir "FFMPEG_LICENSE.txt"
+    if (Test-Path $FFmpegExe) {
+        Write-Host "Bundled ffmpeg present: $FFmpegExe"
+        return
+    }
+    New-Item -ItemType Directory -Force -Path $AssetDir | Out-Null
+    $TempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("rephi_ffmpeg_" + [guid]::NewGuid().ToString("N"))
+    $ZipPath = Join-Path $TempRoot "ffmpeg.zip"
+    New-Item -ItemType Directory -Force -Path $TempRoot | Out-Null
+    try {
+        $Url = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip"
+        Write-Host "Downloading ffmpeg for Windows release build..."
+        Invoke-WebRequest -Uri $Url -OutFile $ZipPath -UseBasicParsing
+        Expand-Archive -Path $ZipPath -DestinationPath $TempRoot -Force
+        $Candidate = Get-ChildItem -Path $TempRoot -Recurse -Filter "ffmpeg.exe" | Select-Object -First 1
+        if (-not $Candidate) {
+            throw "Downloaded ffmpeg archive did not contain ffmpeg.exe."
+        }
+        Copy-Item -Force $Candidate.FullName $FFmpegExe
+        @"
+This Windows release bundles ffmpeg.exe for local audio decoding, including M4A/AAC/ALAC support.
+
+FFmpeg is a separate open-source project and is distributed under its own licenses.
+Project: https://ffmpeg.org/
+License information: https://ffmpeg.org/legal.html
+Windows build source used by build script: https://www.gyan.dev/ffmpeg/builds/
+"@ | Set-Content -Encoding UTF8 $LicenseFile
+        Write-Host "Bundled ffmpeg ready: $FFmpegExe"
+    } finally {
+        if (Test-Path $TempRoot) {
+            Remove-Item -Recurse -Force $TempRoot
+        }
+    }
+}
+
 function Install-MissingPackage($PythonPath, $PipName, $ImportName) {
     if (Test-Import $PythonPath $ImportName) {
         Write-Host "Dependency present: $PipName"
@@ -150,6 +189,8 @@ try {
             Install-MissingPackage $VenvPython $dependency.Pip $dependency.Import
         }
     }
+
+    Ensure-FFmpeg
 
     if (-not $SkipTests) {
         Invoke-Native "Running unit tests" $VenvPython @("-m", "unittest", "discover", "-s", (Join-Path $RepoRoot "tests"))

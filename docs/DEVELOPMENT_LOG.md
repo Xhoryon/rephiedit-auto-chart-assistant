@@ -169,3 +169,47 @@ Windows release follow-up:
 - 当前 macOS 环境没有 PowerShell/Inno Setup，不能生成新的 `Release/Setup.exe`。
 
 发布状态：源码和发布工程已整理到 V2.4.0，但正式 GitHub Release 仍需 Windows 端重新运行 `build_release.bat` 选择 `1 Normal incremental build` 并通过 `release_check.ps1` 后再发布。
+
+## V2.5.2 Final Release Publication
+
+Current goal:
+- Publish V2.5.2 source and GitHub Release from the finalized project directory `re-phiedit-auto-chart-assistant-v2.5.2`.
+
+Scope:
+- No source algorithm changes during publication.
+- No GUI changes during publication.
+- No rebuild during publication; existing Windows `Release/Setup.exe` and `Release/Portable/` artifacts are used.
+
+Release content summary:
+- Native M4A/AAC/ALAC analysis support through bundled Windows `ffmpeg.exe`.
+- Windows release packaging includes FFmpeg license notice.
+- GUI workspace, dark theme, theme persistence, scroll behavior, and export filename usability improvements from V2.5.x are included.
+- PEZ export keeps release compatibility and uses existing package structure.
+
+Decision notes:
+- `Release/`, `build/`, `dist/`, `.venv-windows-build/`, `__pycache__/`, `.pytest_cache/`, `*.egg-info`, `outputs/`, `cache/`, `logs/`, `temp/`, and `.DS_Store` are intentionally ignored and excluded from source commit.
+- Release binaries are uploaded as GitHub Release assets rather than committed to source.
+- `assets/windows/ffmpeg.exe` and `assets/windows/FFMPEG_LICENSE.txt` are included in source so Windows builds can bundle the decoder without depending on user-installed FFmpeg.
+
+Verification / checks:
+- Version metadata checked for `2.5.2` in `VERSION`, `pyproject.toml`, `rephi_auto_chart/__init__.py`, README, CHANGELOG, Inno Setup, PyInstaller version info, and `release_check.ps1`.
+- `.gitignore` checked before commit; release/build/cache directories are ignored.
+- Existing Windows release artifacts checked before publication: `Release/Setup.exe` and `Release/Portable/RePhiEditAutoChartAssistant.exe`.
+- Source test status from V2.5.2 validation: `python3 -m unittest discover -s tests` passed, and `python3 -m py_compile rephi_auto_chart/*.py packaging/windows/gui_entry.py` passed with bytecode cache redirected outside the project when required by macOS permissions.
+
+Git operations planned:
+- Commit message: `Release v2.5.2` with bullet details for native M4A support, GUI usability, theme, scroll, export, and maintenance updates.
+- Push target: `origin main`.
+
+Release operations planned:
+- Rename `Release/Setup.exe` to `Release/RePhiEditAutoChartAssistant_Setup_v2.5.2.exe`.
+- Package `Release/Portable/` as `Release/RePhiEditAutoChartAssistant_Portable_v2.5.2.zip`.
+- Create public GitHub Release tag `v2.5.2` with notes from CHANGELOG `2.5.2` only.
+
+Risks:
+- GitHub may reject large binary source files if future FFmpeg builds exceed GitHub's file size limit; current policy keeps FFmpeg bundled for user-friendly M4A support.
+- Final installer runtime behavior should still be smoke-tested on Windows after download, because this macOS publication step does not rebuild or reinstall.
+
+Next suggested step:
+- After GitHub Release publication, download both assets from GitHub on Windows, run the installer, and verify MP3 and M4A PEZ generation in Re:PhiEdit.
+

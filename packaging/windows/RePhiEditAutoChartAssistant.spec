@@ -105,6 +105,13 @@ datas = [
     (str(ROOT / "docs" / "DEVELOPMENT_LOG.md"), "docs"),
     (str(ROOT / "assets" / "windows" / "app_icon.ico"), "assets/windows"),
 ]
+ffmpeg_asset = ROOT / "assets" / "windows" / "ffmpeg.exe"
+ffmpeg_license = ROOT / "assets" / "windows" / "FFMPEG_LICENSE.txt"
+if ffmpeg_asset.exists():
+    datas.append((str(ffmpeg_asset), "assets/windows"))
+if ffmpeg_license.exists():
+    datas.append((str(ffmpeg_license), "assets/windows"))
+
 for package in ("soundfile", "librosa", "audioread", "PIL", "matplotlib", "numpy", "scipy"):
     datas += optional_data_files(package)
 

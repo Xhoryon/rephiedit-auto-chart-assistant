@@ -10,7 +10,7 @@ if str(ROOT) not in sys.path:
 
 from rephi_auto_chart.chart_analyzer import analyze_chart_file, write_analysis_reports
 from rephi_auto_chart.gui import main
-from rephi_auto_chart.runtime import bundled_resource_path, ensure_runtime_layout
+from rephi_auto_chart.runtime import bundled_resource_path, ensure_runtime_layout, find_ffmpeg
 
 
 if __name__ == "__main__":
@@ -19,6 +19,8 @@ if __name__ == "__main__":
             ensure_runtime_layout()
             if bundled_resource_path("config/default_config.json") is None:
                 raise RuntimeError("Bundled default config was not found.")
+            if find_ffmpeg() is None:
+                raise RuntimeError("Bundled ffmpeg was not found.")
             raise SystemExit(0)
         except Exception:
             raise SystemExit(1)

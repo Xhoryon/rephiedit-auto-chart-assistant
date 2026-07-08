@@ -483,11 +483,11 @@ class CoreFlowTests(unittest.TestCase):
 
     def test_release_metadata_is_current(self):
         root = Path(__file__).resolve().parents[1]
-        self.assertEqual(rephi_auto_chart.__version__, "2.5.1")
+        self.assertEqual(rephi_auto_chart.__version__, "2.5.2")
         version_info = (root / "packaging" / "windows" / "version_info.txt").read_text(encoding="utf-8")
         installer = (root / "installer" / "inno_setup.iss").read_text(encoding="utf-8")
-        self.assertIn("ProductVersion', '2.5.1", version_info)
-        self.assertIn('#define MyAppVersion "2.5.1"', installer)
+        self.assertIn("ProductVersion', '2.5.2", version_info)
+        self.assertIn('#define MyAppVersion "2.5.2"', installer)
         self.assertIn("OutputBaseFilename=Setup", installer)
 
     def test_installer_has_professional_release_checks(self):
@@ -723,16 +723,16 @@ class CoreFlowTests(unittest.TestCase):
 
     def test_version_242_consistency_legacy_hotfix_coverage(self):
         root = Path(__file__).resolve().parents[1]
-        self.assertEqual(rephi_auto_chart.__version__, "2.5.1")
-        self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "2.5.1")
+        self.assertEqual(rephi_auto_chart.__version__, "2.5.2")
+        self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "2.5.2")
         version_info = (root / "packaging" / "windows" / "version_info.txt").read_text(encoding="utf-8")
         installer = (root / "installer" / "inno_setup.iss").read_text(encoding="utf-8")
         release_check = (root / "release_check.ps1").read_text(encoding="utf-8")
         readme = (root / "README.md").read_text(encoding="utf-8")
-        self.assertIn("ProductVersion', '2.5.1", version_info)
-        self.assertIn('#define MyAppVersion "2.5.1"', installer)
-        self.assertIn("2.5.1", release_check)
-        self.assertIn("V2.5.1", readme)
+        self.assertIn("ProductVersion', '2.5.2", version_info)
+        self.assertIn('#define MyAppVersion "2.5.2"', installer)
+        self.assertIn("2.5.2", release_check)
+        self.assertIn("V2.5.2", readme)
 
 
     def test_v242_stats_widget_scrollable(self):
@@ -770,16 +770,16 @@ class CoreFlowTests(unittest.TestCase):
 
     def test_version_242_consistency(self):
         root = Path(__file__).resolve().parents[1]
-        self.assertEqual(rephi_auto_chart.__version__, "2.5.1")
-        self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "2.5.1")
+        self.assertEqual(rephi_auto_chart.__version__, "2.5.2")
+        self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "2.5.2")
         version_info = (root / "packaging" / "windows" / "version_info.txt").read_text(encoding="utf-8")
         installer = (root / "installer" / "inno_setup.iss").read_text(encoding="utf-8")
         release_check = (root / "release_check.ps1").read_text(encoding="utf-8")
         readme = (root / "README.md").read_text(encoding="utf-8")
-        self.assertIn("ProductVersion', '2.5.1", version_info)
-        self.assertIn('#define MyAppVersion "2.5.1"', installer)
-        self.assertIn("2.5.1", release_check)
-        self.assertIn("V2.5.1", readme)
+        self.assertIn("ProductVersion', '2.5.2", version_info)
+        self.assertIn('#define MyAppVersion "2.5.2"', installer)
+        self.assertIn("2.5.2", release_check)
+        self.assertIn("V2.5.2", readme)
 
 
     def test_v250_workspace_scrollable(self):
@@ -855,22 +855,22 @@ class CoreFlowTests(unittest.TestCase):
         ]
         for filename in forbidden_files:
             source = (root / "rephi_auto_chart" / filename).read_text(encoding="utf-8")
-            self.assertNotIn("V2.5.1", source)
+            self.assertNotIn("V2.5.2", source)
             self.assertNotIn("Theme", source)
             self.assertNotIn("Chart Workspace", source)
 
     def test_version_250_consistency(self):
         root = Path(__file__).resolve().parents[1]
-        self.assertEqual(rephi_auto_chart.__version__, "2.5.1")
-        self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "2.5.1")
+        self.assertEqual(rephi_auto_chart.__version__, "2.5.2")
+        self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "2.5.2")
         version_info = (root / "packaging" / "windows" / "version_info.txt").read_text(encoding="utf-8")
         installer = (root / "installer" / "inno_setup.iss").read_text(encoding="utf-8")
         release_check = (root / "release_check.ps1").read_text(encoding="utf-8")
         readme = (root / "README.md").read_text(encoding="utf-8")
-        self.assertIn("ProductVersion', '2.5.1", version_info)
-        self.assertIn('#define MyAppVersion "2.5.1"', installer)
-        self.assertIn("2.5.1", release_check)
-        self.assertIn("V2.5.1", readme)
+        self.assertIn("ProductVersion', '2.5.2", version_info)
+        self.assertIn('#define MyAppVersion "2.5.2"', installer)
+        self.assertIn("2.5.2", release_check)
+        self.assertIn("V2.5.2", readme)
 
     def test_dark_theme_exists(self):
         root = Path(__file__).resolve().parents[1]
@@ -996,16 +996,82 @@ class CoreFlowTests(unittest.TestCase):
 
     def test_version_251_consistency(self):
         root = Path(__file__).resolve().parents[1]
-        self.assertEqual(rephi_auto_chart.__version__, "2.5.1")
-        self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "2.5.1")
+        self.assertEqual(rephi_auto_chart.__version__, "2.5.2")
+        self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "2.5.2")
         version_info = (root / "packaging" / "windows" / "version_info.txt").read_text(encoding="utf-8")
         installer = (root / "installer" / "inno_setup.iss").read_text(encoding="utf-8")
         release_check = (root / "release_check.ps1").read_text(encoding="utf-8")
         readme = (root / "README.md").read_text(encoding="utf-8")
-        self.assertIn("ProductVersion', '2.5.1", version_info)
-        self.assertIn('#define MyAppVersion "2.5.1"', installer)
-        self.assertIn("2.5.1", release_check)
-        self.assertIn("V2.5.1", readme)
+        self.assertIn("ProductVersion', '2.5.2", version_info)
+        self.assertIn('#define MyAppVersion "2.5.2"', installer)
+        self.assertIn("2.5.2", release_check)
+        self.assertIn("V2.5.2", readme)
+
+    def test_v252_ffmpeg_finder_exists(self):
+        from rephi_auto_chart.runtime import find_ffmpeg
+
+        self.assertTrue(callable(find_ffmpeg))
+        root = Path(__file__).resolve().parents[1]
+        runtime_source = (root / "rephi_auto_chart" / "runtime.py").read_text(encoding="utf-8")
+        self.assertIn("assets/windows/ffmpeg.exe", runtime_source)
+        self.assertIn("_internal", runtime_source)
+        self.assertIn("shutil.which", runtime_source)
+
+    def test_v252_m4a_extension_supported(self):
+        self.assertIn(".m4a", SUPPORTED_EXTENSIONS)
+        self.assertIn(".aac", SUPPORTED_EXTENSIONS)
+        self.assertIn(".alac", SUPPORTED_EXTENSIONS)
+        root = Path(__file__).resolve().parents[1]
+        gui_source = (root / "rephi_auto_chart" / "gui.py").read_text(encoding="utf-8")
+        self.assertIn("*.m4a", gui_source)
+        self.assertIn("*.aac", gui_source)
+        self.assertIn("*.alac", gui_source)
+
+    def test_v252_temp_wav_goes_to_runtime_temp(self):
+        root = Path(__file__).resolve().parents[1]
+        analysis_source = (root / "rephi_auto_chart" / "analysis.py").read_text(encoding="utf-8")
+        self.assertIn("ensure_runtime_layout()[0].temp", analysis_source)
+        self.assertIn("tempfile.mkstemp", analysis_source)
+        self.assertNotIn('tempfile.mkstemp(suffix=".wav")', analysis_source)
+
+    def test_v252_release_check_requires_ffmpeg(self):
+        root = Path(__file__).resolve().parents[1]
+        release_check = (root / "release_check.ps1").read_text(encoding="utf-8")
+        spec = (root / "packaging" / "windows" / "RePhiEditAutoChartAssistant.spec").read_text(encoding="utf-8")
+        build_exe = (root / "scripts" / "build_windows_exe.ps1").read_text(encoding="utf-8")
+        self.assertIn("ffmpeg.exe", release_check)
+        self.assertIn("Portable includes bundled ffmpeg", release_check)
+        self.assertIn("find_ffmpeg", release_check)
+        self.assertIn("ffmpeg.exe", spec)
+        self.assertIn("Ensure-FFmpeg", build_exe)
+
+    def test_v252_no_program_files_temp_write(self):
+        root = Path(__file__).resolve().parents[1]
+        analysis_source = (root / "rephi_auto_chart" / "analysis.py").read_text(encoding="utf-8")
+        self.assertIn("runtime_temp", analysis_source)
+        self.assertNotIn("Program Files", analysis_source)
+        self.assertNotIn('Path.cwd() / "temp"', analysis_source)
+
+    def test_v252_user_friendly_m4a_error(self):
+        root = Path(__file__).resolve().parents[1]
+        analysis_source = (root / "rephi_auto_chart" / "analysis.py").read_text(encoding="utf-8")
+        gui_source = (root / "rephi_auto_chart" / "gui.py").read_text(encoding="utf-8")
+        self.assertIn("M4A decoding failed. Please check whether the audio file is valid.", analysis_source)
+        self.assertIn("M4A decoding failed. Please check whether the audio file is valid.", gui_source)
+        self.assertNotIn("Install optional dependencies or convert the audio to WAV", analysis_source)
+
+    def test_version_252_consistency(self):
+        root = Path(__file__).resolve().parents[1]
+        self.assertEqual(rephi_auto_chart.__version__, "2.5.2")
+        self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "2.5.2")
+        version_info = (root / "packaging" / "windows" / "version_info.txt").read_text(encoding="utf-8")
+        installer = (root / "installer" / "inno_setup.iss").read_text(encoding="utf-8")
+        release_check = (root / "release_check.ps1").read_text(encoding="utf-8")
+        readme = (root / "README.md").read_text(encoding="utf-8")
+        self.assertIn("ProductVersion', '2.5.2", version_info)
+        self.assertIn('#define MyAppVersion "2.5.2"', installer)
+        self.assertIn("2.5.2", release_check)
+        self.assertIn("V2.5.2", readme)
 
     def test_chart_analyzer_writes_json_csv_html_reports(self):
         with tempfile.TemporaryDirectory() as tmp:
