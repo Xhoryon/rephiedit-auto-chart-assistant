@@ -2,9 +2,6 @@
 
 A rule-based desktop tool that turns audio files into editable draft charts for Re:PhiEdit.
 
-## GUI Screenshot
-
-> Screenshot placeholder. Replace this section with a GUI image before publishing if desired.
 
 ## Project Overview
 
