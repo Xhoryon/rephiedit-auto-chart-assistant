@@ -1,14 +1,14 @@
 # Release Checklist
 
-## Build Machine
+## Before Creating a Windows Release
 
 - Windows 10 or Windows 11
 - x64-compatible CPU
-- Python 3.12 installed for build machine only
+- Python 3.12 installed for creating the release package
 - Inno Setup 6 installed
 - Internet access for Python packages and optional VC++ Runtime bootstrap
 
-## Build Command
+## Create the Release Package
 
 Double-click:
 
@@ -82,6 +82,6 @@ Release\Portable\RePhiEditAutoChartAssistant.exe
 - Installer registry entries removed.
 - User data under `%LOCALAPPDATA%\RePhiEditAutoChart` is preserved unless manually deleted.
 
-## Known Release Limit
+## Final Release Limitation
 
-This macOS workspace can validate code, scripts, metadata, and release structure, but final `Setup.exe` compilation requires Windows with Inno Setup.
+Code, scripts, metadata, and release structure can be validated on macOS, but final `Setup.exe` compilation requires Windows with Inno Setup.

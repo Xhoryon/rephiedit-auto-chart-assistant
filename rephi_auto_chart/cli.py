@@ -24,14 +24,14 @@ def main(argv: list[str] | None = None) -> int:
     gen.add_argument("-c", "--config", type=Path)
     gen.add_argument("-d", "--difficulty", choices=[d.value for d in Difficulty])
     gen.add_argument("-o", "--output", type=Path)
-    gen.add_argument("--package-dir", type=Path, help="Export an unpacked debug folder with chart, audio, info.txt, and illustration.")
+    gen.add_argument("--package-dir", type=Path, help="Export an unpacked folder for reviewing the chart, audio, info.txt, and illustration.")
     gen.add_argument("--pez", action="store_true", help="Export a Re:PhiEdit .pez import package.")
 
     init = sub.add_parser("init-config", help="Write a default JSON config.")
     init.add_argument("path", type=Path, nargs="?", default=Path("config/default_config.json"))
 
     inspect = sub.add_parser("inspect", help="Inspect a Re:PhiEdit installation.")
-    inspect.add_argument("root", type=Path, nargs="?", default=Path("~/Downloads/phigrosfanmadecharteditor").expanduser())
+    inspect.add_argument("root", type=Path, nargs="?", default=Path("."), help="Re:PhiEdit installation root; defaults to the current directory.")
 
     analyzer = sub.add_parser("analyze-chart", help="Analyze chart.json or .pez and write JSON/CSV/HTML reports.")
     analyzer.add_argument("chart", type=Path)

@@ -61,7 +61,7 @@ function Find-Python312 {
             return @{ Command = "python"; Arguments = @() }
         }
     }
-    throw "Python 3.12 is required on the build machine. End users do not need Python after the installer is built."
+    throw "Python 3.12 is required to create this release package. The installed application does not require Python."
 }
 
 function Test-VenvPython312($PythonPath) {

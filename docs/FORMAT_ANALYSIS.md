@@ -115,4 +115,4 @@ For Import compatibility, V2 exports `.pez` as ZIP/deflate with root files:
 - `<safe_id>.json`
 - `info.txt`
 
-The normal folder export remains available only as a debugging and manual-inspection output.
+The normal folder export remains available as an optional output for reviewing generated files.

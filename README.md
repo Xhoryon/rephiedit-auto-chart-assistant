@@ -31,7 +31,7 @@ V2.5.2 is an M4A decoding hotfix release for Windows installer and portable buil
 - Pattern-based generation with Tap, Drag, Hold, and Flick notes.
 - Timing calibration with automatic recommendation, manual offset, and snap strength controls.
 - PEZ export for Re:PhiEdit Import.
-- Folder package export for inspection/debugging.
+- Folder package export for reviewing generated files.
 - Raw `chart.json` export.
 - Chart Analyzer for chart statistics and JSON/CSV/HTML reports.
 - Compare Mode for comparing two charts.
@@ -80,9 +80,9 @@ RePhiEditAutoChartAssistant.exe
 
 Keep the full portable folder together. Do not move only the `.exe` file out of the folder.
 
-### Source Build
+### Run from Source
 
-For development or source-based use, Python 3.12 is recommended.
+If you run the application from source, Python 3.12 is recommended.
 
 Windows:
 
@@ -137,7 +137,7 @@ The generator follows a deterministic rule-based pipeline:
 
 - `.pez`: recommended output for Re:PhiEdit Import.
 - Folder package: contains chart data, info file, audio, and default illustration for inspection.
-- `chart.json`: raw chart export for advanced users and debugging.
+- `chart.json`: raw chart export for detailed chart review.
 - Analyzer reports: JSON, CSV, and HTML.
 - Comparison reports: generated when comparing two charts.
 
@@ -166,7 +166,7 @@ The GUI includes:
 
 ## Command Line Usage
 
-The GUI is the recommended interface, but a CLI is available for development and automation.
+The GUI is the recommended interface, and the CLI is available for terminal use and batch processing.
 
 Generate a PEZ file:
 
@@ -243,7 +243,7 @@ config/                  Default configuration
 assets/                  Application icons
 installer/               Inno Setup installer script
 packaging/windows/       PyInstaller spec, entry point, and version metadata
-scripts/                 Developer and release helper scripts
+scripts/                 Build and release scripts
 docs/                    Format, algorithm, release, and roadmap docs
 README.md                Project documentation
 CHANGELOG.md             Release history
@@ -272,11 +272,11 @@ V3 is planned as a learning-based generation direction. The broad goals are:
 
 No release date is currently promised.
 
-## Contributing
+## Feedback and Improvements
 
-Contributions are welcome if they keep the project practical and compatible with Re:PhiEdit workflows.
+If you use the tool, feedback and improvements that keep it practical and compatible with Re:PhiEdit workflows are welcome.
 
-Good contribution areas include:
+Useful areas for feedback or improvements include:
 
 - Format compatibility fixes.
 - Export/import validation improvements.
