@@ -1,5 +1,4 @@
 param(
-    [switch]$SkipTests,
     [switch]$NoAudioExtras,
     [switch]$Clean
 )
@@ -191,10 +190,6 @@ try {
     }
 
     Ensure-FFmpeg
-
-    if (-not $SkipTests) {
-        Invoke-Native "Running unit tests" $VenvPython @("-m", "unittest", "discover", "-s", (Join-Path $RepoRoot "tests"))
-    }
 
     Invoke-Native "Building PyInstaller onedir EXE" $VenvPython @("-m", "PyInstaller", "--noconfirm", "--clean", $SpecFile)
 

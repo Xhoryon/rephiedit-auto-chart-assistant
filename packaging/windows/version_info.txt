@@ -15,11 +15,11 @@ VSVersionInfo(
       StringTable(
         '040904B0',
         [
-          StringStruct('CompanyName', 'Jiayi Huang'),
+          StringStruct('CompanyName', 'RePhiEdit Auto Chart contributors'),
           StringStruct('FileDescription', 'Re:PhiEdit Auto Chart Assistant'),
           StringStruct('FileVersion', '2.5.2'),
           StringStruct('InternalName', 'RePhiEditAutoChartAssistant'),
-          StringStruct('LegalCopyright', 'Copyright (C) 2026 Jiayi Huang'),
+          StringStruct('LegalCopyright', 'Copyright (C) 2026 RePhiEdit Auto Chart contributors'),
           StringStruct('OriginalFilename', 'RePhiEditAutoChartAssistant.exe'),
           StringStruct('ProductName', 'Re:PhiEdit Auto Chart Assistant'),
           StringStruct('ProductVersion', '2.5.2')

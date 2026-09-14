@@ -3,7 +3,7 @@
 #define MyAppSafeName "RePhiEdit Auto Chart Assistant"
 #define MyAppSafeId "RePhiEditAutoChartAssistant"
 #define MyAppVersion "2.5.2"
-#define MyAppPublisher "Jiayi Huang"
+#define MyAppPublisher "RePhiEdit Auto Chart contributors"
 #define MyAppURL "https://github.com/"
 #define MyAppExeName "RePhiEditAutoChartAssistant.exe"
 #ifndef SourceDir
@@ -74,7 +74,7 @@ Root: HKCU; Subkey: "Software\Classes\.pez"; ValueType: string; ValueName: ""; V
 Root: HKCU; Subkey: "Software\Classes\RePhiEditAutoChart.PEZ"; ValueType: string; ValueName: ""; ValueData: "Re:PhiEdit PEZ Package"; Flags: uninsdeletekey; Tasks: associatepez
 Root: HKCU; Subkey: "Software\Classes\RePhiEditAutoChart.PEZ\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\assets\windows\app_icon.ico"; Tasks: associatepez
 Root: HKCU; Subkey: "Software\Classes\RePhiEditAutoChart.PEZ\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Tasks: associatepez
-Root: HKCU; Subkey: "Software\Jiayi Huang\{#MyAppSafeName}"; ValueType: string; ValueName: "Version"; ValueData: "{#MyAppVersion}"; Flags: uninsdeletekey
+Root: HKCU; Subkey: "Software\RePhiEdit Auto Chart\{#MyAppSafeName}"; ValueType: string; ValueName: "Version"; ValueData: "{#MyAppVersion}"; Flags: uninsdeletekey
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "Launch {#MyAppDisplayName}"; Flags: nowait postinstall skipifsilent

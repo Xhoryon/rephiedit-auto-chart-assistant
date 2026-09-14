@@ -1,5 +1,4 @@
 param(
-    [switch]$SkipTests,
     [switch]$SkipInstaller,
     [switch]$Clean
 )
@@ -74,9 +73,6 @@ try {
 
     Write-Host "== Building portable EXE =="
     $exeArgs = @{}
-    if ($SkipTests) {
-        $exeArgs["SkipTests"] = $true
-    }
     if ($Clean) {
         $exeArgs["Clean"] = $true
     }

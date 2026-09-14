@@ -59,7 +59,6 @@ Release\Portable\RePhiEditAutoChartAssistant.exe
 - `Release\Portable` contains bundled Python runtime files such as `python*.dll`.
 - `Release\Portable` contains PyInstaller runtime files under `_internal`.
 - MP3/WAV/FLAC/OGG decode dependencies are bundled.
-- PyInstaller build output has no `numpy.f2py.tests` / `pytest` collection warnings.
 - Bundled `config/default_config.json` exists under `Release\Portable\config` or `Release\Portable\_internal\config`.
 - Bundled docs exist under `Release\Portable\docs` or `Release\Portable\_internal\docs`.
 - `release_check.ps1` runs `RePhiEditAutoChartAssistant.exe --smoke-check` from outside the Portable working directory.

@@ -2,10 +2,10 @@
 
 ## Sources Read
 
-- `/Users/jiayihuang/Downloads/phigrosfanmadecharteditor/!) HelpDocument.pdf`
-- `/Users/jiayihuang/Downloads/phigrosfanmadecharteditor/Resources/16266666.pez`
-- `/Users/jiayihuang/Downloads/phigrosfanmadecharteditor/Resources/16266666/16266666.json`
-- `/Users/jiayihuang/Downloads/phigrosfanmadecharteditor/Chartlist.txt`
+- `sample_inputs/HelpDocument.pdf`
+- `sample_inputs/Resources/sample_chart.pez`
+- `sample_inputs/Resources/sample_chart/sample_chart.json`
+- `sample_inputs/Chartlist.txt`
 - Re:PhiEdit executable strings
 
 ## HelpDocument Finding
@@ -116,4 +116,3 @@ For Import compatibility, V2 exports `.pez` as ZIP/deflate with root files:
 - `info.txt`
 
 The normal folder export remains available only as a debugging and manual-inspection output.
-

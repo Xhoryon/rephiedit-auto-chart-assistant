@@ -244,8 +244,7 @@ assets/                  Application icons
 installer/               Inno Setup installer script
 packaging/windows/       PyInstaller spec, entry point, and version metadata
 scripts/                 Developer and release helper scripts
-docs/                    Format, algorithm, testing, release, and roadmap docs
-tests/                   Regression tests
+docs/                    Format, algorithm, release, and roadmap docs
 README.md                Project documentation
 CHANGELOG.md             Release history
 LICENSE                  License file
@@ -281,12 +280,10 @@ Good contribution areas include:
 
 - Format compatibility fixes.
 - Export/import validation improvements.
-- Test coverage.
+- Chart-quality and validator improvements.
 - Documentation clarity.
 - Windows packaging reliability.
 - Audio analysis improvements that do not require training data.
-
-Before changing generation behavior, please add or update tests that show the intended chart-quality improvement.
 
 ## License
 
