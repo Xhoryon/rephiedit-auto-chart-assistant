@@ -98,11 +98,9 @@ datas = [
     (str(ROOT / "CHANGELOG.md"), "."),
     (str(ROOT / "docs" / "FORMAT_ANALYSIS.md"), "docs"),
     (str(ROOT / "docs" / "ALGORITHM.md"), "docs"),
-    (str(ROOT / "docs" / "TESTING.md"), "docs"),
     (str(ROOT / "docs" / "V2_SUMMARY.md"), "docs"),
     (str(ROOT / "docs" / "V3_PLAN.md"), "docs"),
     (str(ROOT / "docs" / "RELEASE_CHECKLIST.md"), "docs"),
-    (str(ROOT / "docs" / "DEVELOPMENT_LOG.md"), "docs"),
     (str(ROOT / "assets" / "windows" / "app_icon.ico"), "assets/windows"),
 ]
 ffmpeg_asset = ROOT / "assets" / "windows" / "ffmpeg.exe"
